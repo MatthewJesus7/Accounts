@@ -14,6 +14,7 @@ const App = () => {
       <Text className="text-2xl font-bold">
         Hello, NativeWind!
       </Text>
+
     </View>
   );
 };
