@@ -8,14 +8,12 @@ NativeWindStyleSheet.setOutput({
   default: "native",
 });
 
-import MyComponent from '../components/MyComponent';
+import FullSidebar from '../components/layout/FullSidebar';
 
 const App = () => {
   return (
     <View>
-
-      {/* <MyComponent></MyComponent> */}
-
+      <FullSidebar></FullSidebar>
     </View>
   );
 };
