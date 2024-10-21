@@ -13,7 +13,7 @@ import MyComponent from '../components/MyComponent';
 const App = () => {
   return (
     <View className="flex-1 justify-center items-center bg-gray-100">
-      <Text className="text-2xl font-bold">
+      <Text className="text-2xl bg-red-500 font-bold">
         Hello, NativeWind!
       </Text>
 
