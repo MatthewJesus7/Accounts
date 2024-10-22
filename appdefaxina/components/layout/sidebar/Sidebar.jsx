@@ -6,7 +6,7 @@ export const Sidebar = ({ children }) => {
   const { isOpen } = useSidebar();
   
   return (
-    <View className={`fixed top-0 left-0 w-64 h-[100vh] bg-gray-800 transition-all 
+    <View className={`fixed top-0 left-0 w-64 h-[100vh] bg-gray-800 
     ${isOpen 
     ? 'translate-x-0' 
     : 'translate-x-64'

@@ -1,19 +1,18 @@
 // App.js
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { NativeWindStyleSheet } from 'nativewind';
 
-// Defina a saída do NativeWind
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
 
-import FullSidebar from '../components/layout/FullSidebar';
+import Login from './Login';
 
 const App = () => {
   return (
     <View>
-      <FullSidebar></FullSidebar>
+
     </View>
   );
 };

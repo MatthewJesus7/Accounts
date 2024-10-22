@@ -6,21 +6,19 @@ import { SidebarHeader } from './sidebar/SidebarHeader';
 import { SidebarMenu } from './sidebar/SidebarMenu';
 import { SidebarToggleButton } from './sidebar/SidebarToggleButton';
 
-
 const FullSidebar = () => {
+  
     return(
     <SidebarProvider>
 
-      <SafeAreaView className="flex-1 flex-row-reverse">
+      <SafeAreaView className="flex-1 flex-row-reverse z-50">
 
         <Sidebar>
           <SidebarHeader title="Menu" />
           <SidebarMenu />
         </Sidebar>
 
-        <View className="flex justify-center items-center w-10 h-10">
-          <SidebarToggleButton />
-        </View>
+        <SidebarToggleButton />
 
       </SafeAreaView>
 
