@@ -1,28 +1,19 @@
-// RootLayout.js
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { useEffect, useState } from 'react';
 import LoadingScreen from './Loading'; // ajuste o caminho conforme necessário
 
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Defina como false ou true conforme seu estado inicial
-  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Aceita true, false ou null
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      // Simule uma verificação de autenticação (por exemplo, API, AsyncStorage, etc.)
-      // Aqui você deve adicionar a lógica real para verificar a autenticação do usuário.
-      // Por exemplo, você pode usar AsyncStorage para verificar um token.
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simula o tempo de carregamento
 
-      // Simulando um tempo de carregamento
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Decida se o usuário está autenticado ou não
-      // Exemplo: se (token) setIsAuthenticated(true);
-      // Aqui, você pode definir isAuthenticated de acordo com a lógica real
-      const value = true
-      setIsAuthenticated(value); // Altere isso com base na lógica de autenticação
-      setIsLoading(false);
+      // Lógica para verificar a autenticação
+      const token = localStorage.getItem('userToken'); // Exemplo com Local Storage
+      setIsAuthenticated(token ? true : false); // Atualiza o estado com base no token
+      setIsLoading(false); // Atualiza o estado de loading
     };
 
     checkAuthentication();
@@ -34,8 +25,7 @@ export default function RootLayout() {
 
   return (
     <Stack>
-      {/* altere entre ! e sem para definir a logica */}
-      {isAuthenticated === true ? (
+      {isAuthenticated === null ? (
         // Tela principal do aplicativo
         <Stack.Screen
           name="index"
@@ -47,7 +37,7 @@ export default function RootLayout() {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
-            headerTitle: 'Home', 
+            headerTitle: 'Home',
             headerBackTitle: 'Voltar',
           }}
         />
@@ -70,19 +60,19 @@ export default function RootLayout() {
       )}
 
       <Stack.Screen
-          name="Register"
-          options={{
-            headerStyle: {
-              backgroundColor: '#F3F4F6',
-            },
-            headerTintColor: 'black',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            headerTitle: 'Registrar-se',
-            headerBackTitle: 'Voltar',
-          }}
-        />
+        name="Register"
+        options={{
+          headerStyle: {
+            backgroundColor: '#F3F4F6',
+          },
+          headerTintColor: 'black',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerTitle: 'Registrar-se',
+          headerBackTitle: 'Voltar',
+        }}
+      />
     </Stack>
   );
 }
