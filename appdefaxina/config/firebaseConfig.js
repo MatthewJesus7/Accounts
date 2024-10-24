@@ -1,25 +1,26 @@
 // src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
-import { getDatabase } from "firebase/database"; // Caso queira usar Realtime Database
-import { getFirestore } from "firebase/firestore"; // Caso queira usar Firestore
-
-// src/firebaseAuth.js
-import { config } from "dotenv";
-config(); // Carrega as variáveis de ambiente do arquivo .env
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  fetchSignInMethodsForEmail, // Importa a função necessária
+} from "firebase/auth";
+import { getDatabase } from "firebase/database";
+import Constants from 'expo-constants';
 
 // Configuração do Firebase
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID
+  apiKey: Constants.expoConfig.extra.FIREBASE_API_KEY,
+  authDomain: Constants.expoConfig.extra.FIREBASE_AUTH_DOMAIN,
+  databaseURL: Constants.expoConfig.extra.FIREBASE_DATABASE_URL,
+  projectId: Constants.expoConfig.extra.FIREBASE_PROJECT_ID,
+  storageBucket: Constants.expoConfig.extra.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: Constants.expoConfig.extra.FIREBASE_MESSAGING_SENDER_ID,
+  appId: Constants.expoConfig.extra.FIREBASE_APP_ID,
+  measurementId: Constants.expoConfig.extra.FIREBASE_MEASUREMENT_ID,
 };
-
 
 // Inicialize o Firebase
 const app = initializeApp(firebaseConfig);
@@ -35,6 +36,18 @@ export const signUp = (email, password) => {
 // Função para fazer login
 export const login = (email, password) => {
   return signInWithEmailAndPassword(auth, email, password);
+};
+
+// Função para verificar se o usuário existe
+export const checkUserExists = async (email) => {
+  try {
+    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+    // Se a lista de métodos de login não estiver vazia, o usuário existe
+    return signInMethods.length > 0;
+  } catch (error) {
+    console.error("Erro ao verificar se o usuário existe:", error);
+    return false; // Retorna falso em caso de erro
+  }
 };
 
 // Função para observar o estado do usuário

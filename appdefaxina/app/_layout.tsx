@@ -1,76 +1,60 @@
 import { Stack } from "expo-router";
-import { useEffect, useState } from 'react';
-import LoadingScreen from './Loading'; // ajuste o caminho conforme necessário
+import { useEffect, useState } from "react";
+import LoadingScreen from "./Loading";
 
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null); // Aceita true, false ou null
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simula o tempo de carregamento
+      setIsLoading(true); // Inicia o loading
+
+      // Simula uma verificação de autenticação com um delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Lógica para verificar a autenticação
-      const token = localStorage.getItem('userToken'); // Exemplo com Local Storage
-      setIsAuthenticated(token ? true : false); // Atualiza o estado com base no token
-      setIsLoading(false); // Atualiza o estado de loading
+      const token = localStorage.getItem("userToken"); // Exemplo com Local Storage
+      setIsAuthenticated(!!token); // Define se o usuário está autenticado com base no token
+
+      setIsLoading(false); // Finaliza o loading
     };
 
     checkAuthentication();
   }, []);
 
   if (isLoading) {
-    return <LoadingScreen />; // Mostra a tela de carregamento
+    return <LoadingScreen />;
   }
 
   return (
     <Stack>
-      {isAuthenticated === null ? (
-        // Tela principal do aplicativo
-        <Stack.Screen
-          name="index"
-          options={{
-            headerStyle: {
-              backgroundColor: '#F3F4F6',
-            },
-            headerTintColor: 'black',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            headerTitle: 'Home',
-            headerBackTitle: 'Voltar',
-          }}
-        />
-      ) : (
-        // Tela de login
-        <Stack.Screen
-          name="Login"
-          options={{
-            headerStyle: {
-              backgroundColor: '#F3F4F6',
-            },
-            headerTintColor: 'black',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-            headerTitle: 'Entrar',
-            headerBackTitle: 'Voltar',
-          }}
-        />
-      )}
-
+      <Stack.Screen
+        name={isAuthenticated ? "index" : "Login"}
+        options={{
+          headerStyle: {
+            backgroundColor: "#F3F4F6",
+          },
+          headerTintColor: "black",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitle: isAuthenticated ? "Home" : "Entrar",
+          headerBackTitle: "Voltar",
+        }}
+      />
       <Stack.Screen
         name="Register"
         options={{
           headerStyle: {
-            backgroundColor: '#F3F4F6',
+            backgroundColor: "#F3F4F6",
           },
-          headerTintColor: 'black',
+          headerTintColor: "black",
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: "bold",
           },
-          headerTitle: 'Registrar-se',
-          headerBackTitle: 'Voltar',
+          headerTitle: "Registrar-se",
+          headerBackTitle: "Voltar",
         }}
       />
     </Stack>
