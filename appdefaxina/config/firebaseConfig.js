@@ -26,97 +26,47 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-// Função para tratar erros do Firebase
-const handleFirebaseErrorLogin = (error) => {
-  let errorMessage = '';
-
-  switch (error.code) {
-    // Erros de Registro
-    case 'auth/email-already-in-use':
-      errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
-      break;
-    case 'auth/weak-password':
-      errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
-      break;
-    case 'auth/operation-not-allowed':
-      errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
-      break;
-
-    // Erros Comuns
-    case 'auth/invalid-verification-code':
-      errorMessage = 'Código de verificação inválido. Tente novamente.';
-      break;
-    case 'auth/invalid-verification-id':
-      errorMessage = 'ID de verificação inválido. Tente novamente.';
-      break;
-
-    // Mensagem padrão para outros erros
-    default:
-      errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
-  }
-
-  throw new Error(errorMessage); 
-};
-  
-
-const handleFirebaseErrorRegister = (error) => {
-  let errorMessage = '';
-
-  switch (error.code) {
-    // Erros de Registro
-    case 'auth/email-already-in-use':
-      errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
-      break;
-    case 'auth/weak-password':
-      errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
-      break;
-    case 'auth/operation-not-allowed':
-      errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
-      break;
-
-    // Erros Comuns
-    case 'auth/invalid-verification-code':
-      errorMessage = 'Código de verificação inválido. Tente novamente.';
-      break;
-    case 'auth/invalid-verification-id':
-      errorMessage = 'ID de verificação inválido. Tente novamente.';
-      break;
-
-    // Mensagem padrão para outros erros
-    default:
-      errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
-  }
-
-  throw new Error(errorMessage); // Lança o erro para ser capturado no componente
-};
-
 // Função para registrar um novo usuário
-export const signUp = async (email, password) => {
+export const signUp = async (email, password, handleError) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCredential.user); // Envia e-mail de verificação
-    return userCredential; // Retorna as credenciais do usuário
+    await sendEmailVerification(userCredential.user);
+    return userCredential;
   } catch (error) {
-    handleFirebaseErrorRegister(error);
+    if (handleError) handleError(error);
   }
 };
 
 // Função para login com tratamento de erros
-export const loginWithEmail = async (email, password) => {
+export const loginWithEmail = async (email, password, handleError) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
-    handleFirebaseErrorLogin(error);
+    if (handleError) handleError(error);
   }
 };
 
 // Função para verificar se o email do usuário foi verificado
 export const checkEmailVerification = (user) => {
-  if (user) {
-    return user.emailVerified; // Retorna o status de verificação
+  if (user && user.emailVerified !== undefined) {
+    return user.emailVerified;
   }
-  return false; // Retorna false se não houver usuário
+  return false;
 };
+
+export const getUserToken = async (user) => {
+  if (user && typeof user.getIdToken === "function") {
+    try {
+      return await user.getIdToken();
+    } catch (error) {
+      console.error("Erro ao obter token:", error);
+      return null;
+    }
+  }
+  console.warn("Usuário não autenticado ou inválido.");
+  return null;
+};
+
 
 // Função para observar o estado do usuário
 export const observeAuth = (callback) => {

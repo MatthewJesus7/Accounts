@@ -12,52 +12,52 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
+  const handleFirebaseErrorLogin = (error) => {
+    let errorMessage = '';
+  
+    switch (error.code) {
+      case 'auth/user-not-found':
+        errorMessage = 'Usuário não encontrado. Verifique o e-mail digitado.';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'Senha incorreta. Tente novamente.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'E-mail inválido. Verifique o formato do e-mail.';
+        break;
+      case 'auth/user-disabled':
+        errorMessage = 'Esta conta foi desativada.';
+        break;
+      case 'auth/too-many-requests':
+        errorMessage = 'Muitas tentativas de login. Tente novamente mais tarde.';
+        break;
+      default:
+        errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+    }
+  
+    setErrorMessage(errorMessage); // Define a mensagem de erro
+  };  
+
   const handleLogin = async () => {
     if (!email || !password) {
       setErrorMessage('Todos os campos são obrigatórios!');
       return;
     }
 
-    setErrorMessage('');
-
     try {
-      await loginWithEmail(email, password);
+      await loginWithEmail(email, password, handleFirebaseErrorLogin);
       const isVerified = await checkEmailVerification(email); // Verifica se o email está verificado
 
       if (!isVerified) {
-        await sendEmailVerification(email); // Envia o código de verificação
+        await sendEmailVerification(email);
         Alert.alert("Email não verificado", "Um código de verificação foi enviado para seu email.");
-        navigation.navigate('EmailVerification', { email }); // Navega para a verificação do email
+        navigation.navigate('EmailVerification', { email });
+
       } else {
-        navigation.navigate('index'); // Redireciona para a página inicial
+        navigation.navigate('index'); 
       }
     } catch (error) {
-      let errorMessage = '';
-
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
-          break;
-        case 'auth/operation-not-allowed':
-          errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
-          break;
-    
-        // Erros Comuns
-        case 'auth/invalid-verification-code':
-          errorMessage = 'Código de verificação inválido. Tente novamente.';
-          break;
-        case 'auth/invalid-verification-id':
-          errorMessage = 'ID de verificação inválido. Tente novamente.';
-          break;
-    
-        // Mensagem padrão para outros erros
-        default:
-          errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
-      }
-      setErrorMessage(errorMessage);
+      handleFirebaseErrorLogin(error)
     }
   };
 

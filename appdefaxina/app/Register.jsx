@@ -19,6 +19,38 @@ const Register = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleRegister = async () => {
+
+    const handleFirebaseErrorRegister = (error) => {
+      let errorMessage = '';
+    
+      switch (error.code) {
+        // Erros de Registro
+        case 'auth/email-already-in-use':
+          errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
+          break;
+        case 'auth/operation-not-allowed':
+          errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
+          break;
+    
+        // Erros Comuns
+        case 'auth/invalid-verification-code':
+          errorMessage = 'Código de verificação inválido. Tente novamente.';
+          break;
+        case 'auth/invalid-verification-id':
+          errorMessage = 'ID de verificação inválido. Tente novamente.';
+          break;
+    
+        // Mensagem padrão para outros erros
+        default:
+          errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+      }
+    
+      setErrorMessage(errorMessage); 
+    };
+
     if (!name || !email || !password || !confirmPassword) {
       setErrorMessage('Todos os campos são obrigatórios!');
       return;
@@ -47,7 +79,7 @@ const Register = () => {
     setErrorMessage('');
 
     try {    
-      await signUp(email, password);
+      await signUp(email, password, handleFirebaseErrorRegister);
       Alert.alert("Registro concluído", "Verifique seu email para ativar sua conta.");
       navigation.navigate('index');
     } catch (error) {
