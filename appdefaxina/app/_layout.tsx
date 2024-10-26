@@ -14,8 +14,9 @@ export default function RootLayout() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Lógica para verificar a autenticação
-      const token = localStorage.getItem("userToken"); // Exemplo com Local Storage
-      setIsAuthenticated(!!token); // Define se o usuário está autenticado com base no token
+      // const token = localStorage.getItem("userToken"); // Exemplo com Local Storage
+      
+      setIsAuthenticated(false); // Define se o usuário está autenticado com base no token
 
       setIsLoading(false); // Finaliza o loading
     };

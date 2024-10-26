@@ -2,53 +2,34 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Input from '../components/input/Input';
 import { useNavigation } from '@react-navigation/native';
-import { signIn } from '../config/firebaseConfig'; // Mantenha a importação da função signIn
-import { getAuth, fetchSignInMethodsForEmail } from 'firebase/auth';
-
-const auth = getAuth();
-
-// Função para verificar se o usuário existe
-export const checkUserExists = async (email) => {
-  try {
-    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-    // Se a lista de métodos de login não estiver vazia, o usuário existe
-    return signInMethods.length > 0;
-  } catch (error) {
-    console.error("Erro ao verificar se o usuário existe:", error);
-    return false; // Retorna falso em caso de erro
-  }
-};
+import { loginWithEmail } from '../config/firebaseConfig';
+import { Ionicons } from '@expo/vector-icons';
 
 const Login = () => {
   const navigation = useNavigation();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
-    // Validação básica
     if (!email || !password) {
       setErrorMessage('Todos os campos são obrigatórios!');
       return;
     }
 
-    setErrorMessage(''); // Limpa mensagens de erro
+    setErrorMessage('');
 
     try {
-      // Verifica se o usuário existe
-      const userExists = await checkUserExists(email);
-      if (!userExists) {
-        setErrorMessage('Usuário não encontrado. Faça o registro antes de fazer login.');
-        return;
-      }
-
-      // Se o usuário existir, tenta fazer login
-      await signIn(email, password); // Chama a função signIn com email e senha
-      navigation.navigate('index'); // Navega para a tela inicial após o login
+      await loginWithEmail(email, password);
+      navigation.navigate('index');
     } catch (error) {
-      setErrorMessage(error.message); // Exibe erro no campo
+      setErrorMessage(error.message); // Aqui, pegamos a mensagem do erro lançado
     }
+  };
+
+  const handleForgotPassword = () => {
+    navigation.navigate('ForgotPassword');
   };
 
   return (
@@ -62,31 +43,48 @@ const Login = () => {
         value={email}
         onChangeText={setEmail}
       />
-      <Input
-        label="Senha"
-        placeholder="Digite sua senha"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+
+      <View className="relative">
+        <Input
+          label="Senha"
+          placeholder="Digite sua senha"
+          secureTextEntry={!isPasswordVisible}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity
+          onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+          className="absolute right-4 top-[40px]"
+        >
+          <Ionicons
+            name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+            size={24}
+            color="gray"
+          />
+        </TouchableOpacity>
+      </View>
 
       {errorMessage ? (
         <Text className="text-red-500 text-sm mt-2">{errorMessage}</Text>
       ) : null}
 
-      <TouchableOpacity 
-        className="bg-blue-500 p-4 rounded-lg mt-6" 
+      <TouchableOpacity
+        className="bg-blue-500 p-4 rounded-lg mt-6"
         onPress={handleLogin}
-        disabled={!email || !password}
       >
         <Text className="text-white text-center font-semibold">Entrar</Text>
       </TouchableOpacity>
 
-      <View className="flex flex-row justify-center mt-4">
-        <Text className="pr-2">Não tem uma conta?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text className="text-blue-500 underline">Registre-se</Text>
+      <View className="flex flex-row justify-between mt-4">
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text className="text-blue-500 underline">Esqueci minha senha</Text>
         </TouchableOpacity>
+        <View className="flex flex-row items-center">
+          <Text className="pr-2">Não tem uma conta?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+            <Text className="text-blue-500 underline">Registre-se</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

@@ -5,12 +5,11 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  fetchSignInMethodsForEmail, // Importa a função necessária
+  fetchSignInMethodsForEmail as checkSignInMethods,
 } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import Constants from 'expo-constants';
 
-// Configuração do Firebase
 const firebaseConfig = {
   apiKey: Constants.expoConfig.extra.FIREBASE_API_KEY,
   authDomain: Constants.expoConfig.extra.FIREBASE_AUTH_DOMAIN,
@@ -22,40 +21,55 @@ const firebaseConfig = {
   measurementId: Constants.expoConfig.extra.FIREBASE_MEASUREMENT_ID,
 };
 
-// Inicialize o Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app); // Para Realtime Database
-// const firestore = getFirestore(app); // Para Firestore
+const database = getDatabase(app);
 
-// Função para criar um novo usuário
+// Função para registrar um novo usuário
 export const signUp = (email, password) => {
   return createUserWithEmailAndPassword(auth, email, password);
 };
 
-// Função para fazer login
-export const login = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password);
+// Função para login com tratamento de erros
+export const loginWithEmail = async (email, password) => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    // Lida com os erros de forma centralizada
+    let errorMessage = '';
+
+    switch (error.code) {
+      case 'auth/user-not-found':
+        errorMessage = 'Usuário não encontrado. Verifique se o email está correto ou registre-se.';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'Senha incorreta. Tente novamente.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Formato de email inválido. Corrija e tente novamente.';
+        break;
+      default:
+        errorMessage = 'Erro ao fazer login: ' + error.message;
+    }
+    throw new Error(errorMessage); // Lança o erro para ser capturado no componente
+  }
 };
 
-// Função para verificar se o usuário existe
+// Função para verificar se o usuário já existe
 export const checkUserExists = async (email) => {
   try {
-    const signInMethods = await fetchSignInMethodsForEmail(auth, email);
-    // Se a lista de métodos de login não estiver vazia, o usuário existe
+    const signInMethods = await checkSignInMethods(auth, email);
     return signInMethods.length > 0;
   } catch (error) {
     console.error("Erro ao verificar se o usuário existe:", error);
-    return false; // Retorna falso em caso de erro
+    return false;
   }
 };
 
 // Função para observar o estado do usuário
 export const observeAuth = (callback) => {
-  onAuthStateChanged(auth, (user) => {
-    callback(user);
-  });
+  onAuthStateChanged(auth, (user) => callback(user));
 };
 
-// Exportando o auth e database (ou firestore, se necessário)
-export { auth, database }; // ou export { auth, firestore };
+// Exportando auth e database
+export { auth, database };
