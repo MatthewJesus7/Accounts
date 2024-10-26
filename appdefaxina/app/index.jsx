@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { NativeWindStyleSheet } from 'nativewind';
 
 NativeWindStyleSheet.setOutput({
@@ -11,8 +11,9 @@ import Login from './Login';
 
 const App = () => {
   return (
-    <View>
-
+    <View 
+    className="flex">
+      <Text className="font-bold text-2xl text-center">Ai, ta pegando</Text>
     </View>
   );
 };

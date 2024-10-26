@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Input from '../components/input/Input';
 import { useNavigation } from '@react-navigation/native';
-import { loginWithEmail } from '../config/firebaseConfig';
+import { loginWithEmail, sendEmailVerification, checkEmailVerification } from '../config/firebaseConfig'; // Importar funções necessárias
 import { Ionicons } from '@expo/vector-icons';
 
 const Login = () => {
@@ -22,9 +22,42 @@ const Login = () => {
 
     try {
       await loginWithEmail(email, password);
-      navigation.navigate('index');
+      const isVerified = await checkEmailVerification(email); // Verifica se o email está verificado
+
+      if (!isVerified) {
+        await sendEmailVerification(email); // Envia o código de verificação
+        Alert.alert("Email não verificado", "Um código de verificação foi enviado para seu email.");
+        navigation.navigate('EmailVerification', { email }); // Navega para a verificação do email
+      } else {
+        navigation.navigate('index'); // Redireciona para a página inicial
+      }
     } catch (error) {
-      setErrorMessage(error.message); // Aqui, pegamos a mensagem do erro lançado
+      let errorMessage = '';
+
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
+          break;
+        case 'auth/operation-not-allowed':
+          errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
+          break;
+    
+        // Erros Comuns
+        case 'auth/invalid-verification-code':
+          errorMessage = 'Código de verificação inválido. Tente novamente.';
+          break;
+        case 'auth/invalid-verification-id':
+          errorMessage = 'ID de verificação inválido. Tente novamente.';
+          break;
+    
+        // Mensagem padrão para outros erros
+        default:
+          errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+      }
+      setErrorMessage(errorMessage);
     }
   };
 

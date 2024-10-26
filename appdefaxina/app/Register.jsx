@@ -1,8 +1,8 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Input from '../components/input/Input';
 import { useNavigation } from '@react-navigation/native';
-import { signUp, checkUserExists } from '../config/firebaseConfig'; // Usar checkUserExists
+import { signUp } from '../config/firebaseConfig';
 import { validateEmail, checkPasswordStrength } from '../utils/validationUtils';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -46,19 +46,27 @@ const Register = () => {
 
     setErrorMessage('');
 
-    // Verificar se o email já está em uso
-    try {
-      const userExists = await checkUserExists(email);
-      if (userExists) {
-        setErrorMessage('Este email já está cadastrado. Por favor, faça login.');
-        return;
-      }
-      
+    try {    
       await signUp(email, password);
       Alert.alert("Registro concluído", "Verifique seu email para ativar sua conta.");
       navigation.navigate('index');
     } catch (error) {
-      setErrorMessage(error.message);
+      let errorMessage;
+
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
+          break;
+        case 'auth/operation-not-allowed':
+          errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
+          break;
+        default:
+          errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+      }
+      setErrorMessage(errorMessage);
     }
   };
 
@@ -150,14 +158,14 @@ const Register = () => {
       </View>
 
       <TouchableOpacity
-        className={ `p-4 rounded-lg mt-6 bg-blue-500`}
+        className={`p-4 rounded-lg mt-6 bg-blue-500`}
         onPress={handleRegister}
       >
         <Text className="text-white text-center font-semibold">Cadastrar</Text>
       </TouchableOpacity>
 
-      <View className="flex flex-row justify-center mt-4">
-        <Text className="pr-2">Já possui uma conta?</Text>
+      <View className="flex flex-row justify-between mt-4">
+        <Text className="pr-2">Já tem uma conta?</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text className="text-blue-500 underline">Faça login</Text>
         </TouchableOpacity>

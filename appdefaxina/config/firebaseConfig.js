@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   fetchSignInMethodsForEmail as checkSignInMethods,
+  sendEmailVerification, // Importação necessária
 } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import Constants from 'expo-constants';
@@ -25,9 +26,79 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
+// Função para tratar erros do Firebase
+const handleFirebaseErrorLogin = (error) => {
+  let errorMessage = '';
+
+  switch (error.code) {
+    // Erros de Registro
+    case 'auth/email-already-in-use':
+      errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
+      break;
+    case 'auth/weak-password':
+      errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
+      break;
+    case 'auth/operation-not-allowed':
+      errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
+      break;
+
+    // Erros Comuns
+    case 'auth/invalid-verification-code':
+      errorMessage = 'Código de verificação inválido. Tente novamente.';
+      break;
+    case 'auth/invalid-verification-id':
+      errorMessage = 'ID de verificação inválido. Tente novamente.';
+      break;
+
+    // Mensagem padrão para outros erros
+    default:
+      errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+  }
+
+  throw new Error(errorMessage); 
+};
+  
+
+const handleFirebaseErrorRegister = (error) => {
+  let errorMessage = '';
+
+  switch (error.code) {
+    // Erros de Registro
+    case 'auth/email-already-in-use':
+      errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
+      break;
+    case 'auth/weak-password':
+      errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
+      break;
+    case 'auth/operation-not-allowed':
+      errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
+      break;
+
+    // Erros Comuns
+    case 'auth/invalid-verification-code':
+      errorMessage = 'Código de verificação inválido. Tente novamente.';
+      break;
+    case 'auth/invalid-verification-id':
+      errorMessage = 'ID de verificação inválido. Tente novamente.';
+      break;
+
+    // Mensagem padrão para outros erros
+    default:
+      errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+  }
+
+  throw new Error(errorMessage); // Lança o erro para ser capturado no componente
+};
+
 // Função para registrar um novo usuário
-export const signUp = (email, password) => {
-  return createUserWithEmailAndPassword(auth, email, password);
+export const signUp = async (email, password) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCredential.user); // Envia e-mail de verificação
+    return userCredential; // Retorna as credenciais do usuário
+  } catch (error) {
+    handleFirebaseErrorRegister(error);
+  }
 };
 
 // Função para login com tratamento de erros
@@ -35,35 +106,16 @@ export const loginWithEmail = async (email, password) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
-    // Lida com os erros de forma centralizada
-    let errorMessage = '';
-
-    switch (error.code) {
-      case 'auth/user-not-found':
-        errorMessage = 'Usuário não encontrado. Verifique se o email está correto ou registre-se.';
-        break;
-      case 'auth/wrong-password':
-        errorMessage = 'Senha incorreta. Tente novamente.';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'Formato de email inválido. Corrija e tente novamente.';
-        break;
-      default:
-        errorMessage = 'Erro ao fazer login: ' + error.message;
-    }
-    throw new Error(errorMessage); // Lança o erro para ser capturado no componente
+    handleFirebaseErrorLogin(error);
   }
 };
 
-// Função para verificar se o usuário já existe
-export const checkUserExists = async (email) => {
-  try {
-    const signInMethods = await checkSignInMethods(auth, email);
-    return signInMethods.length > 0;
-  } catch (error) {
-    console.error("Erro ao verificar se o usuário existe:", error);
-    return false;
+// Função para verificar se o email do usuário foi verificado
+export const checkEmailVerification = (user) => {
+  if (user) {
+    return user.emailVerified; // Retorna o status de verificação
   }
+  return false; // Retorna false se não houver usuário
 };
 
 // Função para observar o estado do usuário
@@ -71,5 +123,5 @@ export const observeAuth = (callback) => {
   onAuthStateChanged(auth, (user) => callback(user));
 };
 
-// Exportando auth e database
-export { auth, database };
+// Exportando funções e objetos
+export { auth, database, sendEmailVerification }; // Adiciona sendEmailVerification aqui
