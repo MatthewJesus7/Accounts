@@ -58,6 +58,49 @@ export default function RootLayout() {
           headerBackTitle: "Voltar",
         }}
       />
+            <Stack.Screen
+        name="PrivacyPolicy"
+        options={{
+          headerStyle: {
+            backgroundColor: "#F3F4F6",
+          },
+          headerTintColor: "black",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitle: "Registrar-se",
+          headerBackTitle: "Voltar",
+        }}
+      />
+      <Stack.Screen
+        name="TermsOfUse"
+        options={{
+          headerStyle: {
+            backgroundColor: "#F3F4F6",
+          },
+          headerTintColor: "black",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitle: "Registrar-se",
+          headerBackTitle: "Voltar",
+        }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        options={{
+          headerStyle: {
+            backgroundColor: "#F3F4F6",
+          },
+          headerTintColor: "black",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitle: "Registrar-se",
+          headerBackTitle: "Voltar",
+        }}
+      />
     </Stack>
+    
   );
 }

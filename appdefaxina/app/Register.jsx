@@ -18,39 +18,38 @@ const Register = () => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  const handleFirebaseErrorRegister = (error) => {
+    let errorMessage = '';
+
+    switch (error.code) {
+      // Erros de Registro
+      case 'auth/email-already-in-use':
+        errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
+        break;
+      case 'auth/weak-password':
+        errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
+        break;
+      case 'auth/operation-not-allowed':
+        errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
+        break;
+
+      // Erros Comuns
+      case 'auth/invalid-verification-code':
+        errorMessage = 'Código de verificação inválido. Tente novamente.';
+        break;
+      case 'auth/invalid-verification-id':
+        errorMessage = 'ID de verificação inválido. Tente novamente.';
+        break;
+
+      // Mensagem padrão para outros erros
+      default:
+        errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+    }
+
+    setErrorMessage(errorMessage); 
+  };
+
   const handleRegister = async () => {
-
-    const handleFirebaseErrorRegister = (error) => {
-      let errorMessage = '';
-    
-      switch (error.code) {
-        // Erros de Registro
-        case 'auth/email-already-in-use':
-          errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
-          break;
-        case 'auth/operation-not-allowed':
-          errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
-          break;
-    
-        // Erros Comuns
-        case 'auth/invalid-verification-code':
-          errorMessage = 'Código de verificação inválido. Tente novamente.';
-          break;
-        case 'auth/invalid-verification-id':
-          errorMessage = 'ID de verificação inválido. Tente novamente.';
-          break;
-    
-        // Mensagem padrão para outros erros
-        default:
-          errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
-      }
-    
-      setErrorMessage(errorMessage); 
-    };
-
     if (!name || !email || !password || !confirmPassword) {
       setErrorMessage('Todos os campos são obrigatórios!');
       return;
@@ -76,29 +75,16 @@ const Register = () => {
       return;
     }
 
+    // Limpar mensagens de erro antes de iniciar o registro
     setErrorMessage('');
 
     try {    
+      // Enviar email para o Firebase após a verificação
       await signUp(email, password, handleFirebaseErrorRegister);
       Alert.alert("Registro concluído", "Verifique seu email para ativar sua conta.");
       navigation.navigate('index');
     } catch (error) {
-      let errorMessage;
-
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = 'Este email já está cadastrado. Por favor, faça login.';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'A senha fornecida é muito fraca. Escolha uma senha mais forte.';
-          break;
-        case 'auth/operation-not-allowed':
-          errorMessage = 'Este método de autenticação não está habilitado. Contate o administrador.';
-          break;
-        default:
-          errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
-      }
-      setErrorMessage(errorMessage);
+      handleFirebaseErrorRegister(error);
     }
   };
 
@@ -136,7 +122,7 @@ const Register = () => {
         />
         <TouchableOpacity
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          className="absolute right-0 top-[27px] border border-gray-300 rounded-br-lg rounded-tr-lg p-[12.5px]"
+          className="absolute right-3 top-[43%]"
         >
           <Ionicons
             name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
@@ -162,7 +148,7 @@ const Register = () => {
         />
         <TouchableOpacity
           onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-          className="absolute right-0 top-[27px] border border-gray-300 rounded-br-lg rounded-tr-lg p-[12.5px]"
+          className="absolute right-3 top-[43%]"
         >
           <Ionicons
             name={isConfirmPasswordVisible ? "eye-off-outline" : "eye-outline"}
@@ -183,9 +169,25 @@ const Register = () => {
             size={24}
             color="blue"
           />
-        </TouchableOpacity>
+        </TouchableOpacity >
+
         <Text className="ml-2">
-          Aceito os <Text className="text-blue-500 underline">termos de uso</Text> e a <Text className="text-blue-500 underline">política de privacidade</Text>
+          Aceito os 
+          <TouchableOpacity onPress={() => navigation.navigate('TermsOfUse')}
+          className="px-1.5"
+          >
+            <Text className="text-blue-500 underline">
+              termos de uso
+            </Text>
+          </TouchableOpacity>
+           e a 
+          <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicy')}
+          className="px-1.5"
+          >
+            <Text className="text-blue-500 underline">
+              política de privacidade
+            </Text>
+          </TouchableOpacity>
         </Text>
       </View>
 
@@ -196,7 +198,7 @@ const Register = () => {
         <Text className="text-white text-center font-semibold">Cadastrar</Text>
       </TouchableOpacity>
 
-      <View className="flex flex-row justify-between mt-4">
+      <View className="flex items-center flex-row mt-4">
         <Text className="pr-2">Já tem uma conta?</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text className="text-blue-500 underline">Faça login</Text>

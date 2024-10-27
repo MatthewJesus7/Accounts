@@ -84,7 +84,7 @@ const Login = () => {
 
       <View className="relative">
         <Input
-        classname="mr-[50px] rounded-br-none rounded-tr-none"
+        // classname="mr-[50px] rounded-br-none rounded-tr-none"
           label="Senha"
           placeholder="Digite sua senha"
           secureTextEntry={!isPasswordVisible}
@@ -93,7 +93,7 @@ const Login = () => {
         />
         <TouchableOpacity
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          className="absolute right-0 top-[27px] border border-gray-300 rounded-br-lg rounded-tr-lg p-[12.5px] bg-gray-50"
+          className="absolute right-3 top-[43%]"
         >
             <Ionicons
               name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
