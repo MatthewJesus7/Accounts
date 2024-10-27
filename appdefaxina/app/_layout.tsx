@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./Loading";
+import { View } from "react-native";
 
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,78 +30,92 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen
-        name={isAuthenticated ? "index" : "Login"}
-        options={{
-          headerStyle: {
-            backgroundColor: "#F3F4F6",
-          },
-          headerTintColor: "black",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: isAuthenticated ? "Home" : "Entrar",
-          headerBackTitle: "Voltar",
-        }}
-      />
-      <Stack.Screen
-        name="Register"
-        options={{
-          headerStyle: {
-            backgroundColor: "#F3F4F6",
-          },
-          headerTintColor: "black",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Registrar-se",
-          headerBackTitle: "Voltar",
-        }}
-      />
-      <Stack.Screen
-        name="PrivacyPolicy"
-        options={{
-          headerStyle: {
-            backgroundColor: "#F3F4F6",
-          },
-          headerTintColor: "black",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Registrar-se",
-          headerBackTitle: "Voltar",
-        }}
-      />
-      <Stack.Screen
-        name="TermsOfUse"
-        options={{
-          headerStyle: {
-            backgroundColor: "#F3F4F6",
-          },
-          headerTintColor: "black",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Registrar-se",
-          headerBackTitle: "Voltar",
-        }}
-      />
+      <Stack>
+        <Stack.Screen
+          name={isAuthenticated ? "index" : "Login"}
+          options={{
+            headerStyle: {
+              backgroundColor: "#F3F4F6",
+            },
+            headerTintColor: "black",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            headerTitle: isAuthenticated ? "Home" : "Entrar",
+            headerBackTitle: "Voltar",
+          }}
+        />
+        <Stack.Screen
+          name="Register"
+          options={{
+            headerStyle: {
+              backgroundColor: "#F3F4F6",
+            },
+            headerTintColor: "black",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            headerTitle: "Registrar-se",
+            headerBackTitle: "Voltar",
+          }}
+        />
+        <Stack.Screen
+          name="PrivacyPolicy"
+          options={{
+            headerStyle: {
+              backgroundColor: "#F3F4F6",
+            },
+            headerTintColor: "black",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            headerTitle: "Registrar-se",
+            headerBackTitle: "Voltar",
+          }}
+        />
+        <Stack.Screen
+          name="TermsOfUse"
+          options={{
+            headerStyle: {
+              backgroundColor: "#F3F4F6",
+            },
+            headerTintColor: "black",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            headerTitle: "Registrar-se",
+            headerBackTitle: "Voltar",
+          }}
+        />
       
-      <Stack.Screen
-        name="ForgotPassword"
-        options={{
-          headerStyle: {
-            backgroundColor: "#F3F4F6",
-          },
-          headerTintColor: "black",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Registrar-se",
-          headerBackTitle: "Voltar",
-        }}
-      />
-    </Stack>
+        <Stack.Screen
+          name="ForgotPassword"
+          options={{
+            headerStyle: {
+              backgroundColor: "#F3F4F6",
+            },
+            headerTintColor: "black",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            headerTitle: "Registrar-se",
+            headerBackTitle: "Voltar",
+          }}
+        />
+        <Stack.Screen
+          name="Profile"
+          options={{
+            headerStyle: {
+              backgroundColor: "#F3F4F6",
+            },
+            headerTintColor: "black",
+            headerTitleStyle: {
+              fontWeight: "bold",
+            },
+            headerTitle: "Registrar-se",
+            headerBackTitle: "Voltar",
+          }}
+        />
+      </Stack>
   );
 }

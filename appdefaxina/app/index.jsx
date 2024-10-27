@@ -7,13 +7,14 @@ NativeWindStyleSheet.setOutput({
   default: "native",
 });
 
-import Login from './Login';
+import BottomBar from "../components/layout/bottombar/BottomBar"
 
 const App = () => {
   return (
     <View 
-    className="flex">
+    className="flex h-full">
       <Text className="font-bold text-2xl text-center">Ai, ta pegando</Text>
+      <BottomBar></BottomBar>
     </View>
   );
 };

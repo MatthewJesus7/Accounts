@@ -1,10 +1,10 @@
 import { SafeAreaView, View } from 'react-native';
 
-import { SidebarProvider } from './sidebar/SidebarContext';
-import { Sidebar } from './sidebar/Sidebar';
-import { SidebarHeader } from './sidebar/SidebarHeader';
-import { SidebarMenu } from './sidebar/SidebarMenu';
-import { SidebarToggleButton } from './sidebar/SidebarToggleButton';
+import { SidebarProvider } from './SidebarContext';
+import { Sidebar } from './Sidebar';
+import { SidebarHeader } from './SidebarHeader';
+import { SidebarMenu } from './SidebarMenu';
+import { SidebarToggleButton } from './SidebarToggleButton';
 
 const FullSidebar = () => {
   
