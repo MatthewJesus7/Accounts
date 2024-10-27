@@ -17,7 +17,7 @@ const Login = () => {
   
     switch (error.code) {
       case 'auth/user-not-found':
-        errorMessage = 'Usuário não encontrado. Verifique o e-mail digitado.';
+        errorMessage = 'Usuário não encontrado. Verifique o e-mail ou senha.';
         break;
       case 'auth/wrong-password':
         errorMessage = 'Senha incorreta. Tente novamente.';
@@ -32,7 +32,7 @@ const Login = () => {
         errorMessage = 'Muitas tentativas de login. Tente novamente mais tarde.';
         break;
       default:
-        errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
+        errorMessage = 'Erro ao realizar login. Por favor, verifique seu e-mail e senha e tente novamente.';
     }
   
     setErrorMessage(errorMessage); // Define a mensagem de erro
@@ -46,12 +46,17 @@ const Login = () => {
 
     try {
       await loginWithEmail(email, password, handleFirebaseErrorLogin);
-      const isVerified = await checkEmailVerification(email); // Verifica se o email está verificado
+
+      const userCredential = await loginWithEmail(email, password, handleFirebaseErrorLogin);
+
+      const user = userCredential.user;
+
+      const isVerified = await checkEmailVerification(user); // Verifica se o email está verificado
 
       if (!isVerified) {
-        await sendEmailVerification(email);
+        await sendEmailVerification(user);
         Alert.alert("Email não verificado", "Um código de verificação foi enviado para seu email.");
-        navigation.navigate('EmailVerification', { email });
+        // navigation.navigate('EmailVerification', { email });
 
       } else {
         navigation.navigate('index'); 
@@ -79,6 +84,7 @@ const Login = () => {
 
       <View className="relative">
         <Input
+        classname="mr-[50px] rounded-br-none rounded-tr-none"
           label="Senha"
           placeholder="Digite sua senha"
           secureTextEntry={!isPasswordVisible}
@@ -87,13 +93,13 @@ const Login = () => {
         />
         <TouchableOpacity
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          className="absolute right-4 top-[40px]"
+          className="absolute right-0 top-[27px] border border-gray-300 rounded-br-lg rounded-tr-lg p-[12.5px] bg-gray-50"
         >
-          <Ionicons
-            name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
-            size={24}
-            color="gray"
-          />
+            <Ionicons
+              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+              size={24}
+              color="gray"
+            />
         </TouchableOpacity>
       </View>
 
@@ -108,10 +114,12 @@ const Login = () => {
         <Text className="text-white text-center font-semibold">Entrar</Text>
       </TouchableOpacity>
 
-      <View className="flex flex-row justify-between mt-4">
+      <View className="flex flex-col items-center mt-4">
+
         <TouchableOpacity onPress={handleForgotPassword}>
-          <Text className="text-blue-500 underline">Esqueci minha senha</Text>
+          <Text className="text-blue-500 underline pb-4">Esqueci minha senha</Text>
         </TouchableOpacity>
+
         <View className="flex flex-row items-center">
           <Text className="pr-2">Não tem uma conta?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>

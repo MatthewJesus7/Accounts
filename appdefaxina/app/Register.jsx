@@ -136,7 +136,7 @@ const Register = () => {
         />
         <TouchableOpacity
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          className="absolute right-4 top-[40px]"
+          className="absolute right-0 top-[27px] border border-gray-300 rounded-br-lg rounded-tr-lg p-[12.5px]"
         >
           <Ionicons
             name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
@@ -162,7 +162,7 @@ const Register = () => {
         />
         <TouchableOpacity
           onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-          className="absolute right-4 top-[40px]"
+          className="absolute right-0 top-[27px] border border-gray-300 rounded-br-lg rounded-tr-lg p-[12.5px]"
         >
           <Ionicons
             name={isConfirmPasswordVisible ? "eye-off-outline" : "eye-outline"}
