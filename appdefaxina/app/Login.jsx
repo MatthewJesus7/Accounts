@@ -29,7 +29,7 @@ const Login = () => {
         errorMessage = 'Esta conta foi desativada.';
         break;
       case 'auth/too-many-requests':
-        errorMessage = 'Muitas tentativas de login. Tente novamente mais tarde.';
+        errorMessage = 'Muitas tentativas de login. Tente novamente em alguns minutos.';
         break;
       default:
         errorMessage = 'Erro ao realizar login. Por favor, verifique seu e-mail e senha e tente novamente.';

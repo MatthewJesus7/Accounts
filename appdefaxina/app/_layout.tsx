@@ -58,7 +58,7 @@ export default function RootLayout() {
           headerBackTitle: "Voltar",
         }}
       />
-            <Stack.Screen
+      <Stack.Screen
         name="PrivacyPolicy"
         options={{
           headerStyle: {
@@ -86,6 +86,7 @@ export default function RootLayout() {
           headerBackTitle: "Voltar",
         }}
       />
+      
       <Stack.Screen
         name="ForgotPassword"
         options={{
@@ -101,6 +102,5 @@ export default function RootLayout() {
         }}
       />
     </Stack>
-    
   );
 }
