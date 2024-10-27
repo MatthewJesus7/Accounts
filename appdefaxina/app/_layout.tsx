@@ -44,20 +44,6 @@ export default function RootLayout() {
           headerBackTitle: "Voltar",
         }}
       />
-            <Stack.Screen
-        name="EmailVerification"
-        options={{
-          headerStyle: {
-            backgroundColor: "#F3F4F6",
-          },
-          headerTintColor: "black",
-          headerTitleStyle: {
-            fontWeight: "bold",
-          },
-          headerTitle: "Verfique seu Email",
-          headerBackTitle: "Voltar",
-        }}
-      />
       <Stack.Screen
         name="Register"
         options={{
