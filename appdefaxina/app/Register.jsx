@@ -82,7 +82,8 @@ const Register = () => {
       // Enviar email para o Firebase após a verificação
       await signUp(email, password, handleFirebaseErrorRegister);
       Alert.alert("Registro concluído", "Verifique seu email para ativar sua conta.");
-      navigation.navigate('index');
+      
+      navigation.navigate('Login');
     } catch (error) {
       handleFirebaseErrorRegister(error);
     }
