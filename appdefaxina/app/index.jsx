@@ -14,7 +14,6 @@ const App = () => {
     <View 
     className="flex h-full">
       <Text className="font-bold text-2xl text-center">Ai, ta pegando</Text>
-      <BottomBar></BottomBar>
     </View>
   );
 };

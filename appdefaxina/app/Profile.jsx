@@ -112,8 +112,9 @@ const Profile = () => {
         <View className="flex-1 items-center p-6">
           {/* Banner editável */}
           <TouchableOpacity
-            className="relative -top-10 left-0 w-[100vw] h-44"
+            className={`relative -top-10 left-0 w-[100vw] h-44`}
             onPress={() => isEditing && pickImage('bannerImage')}
+            activeOpacity={!isEditing && 1}
           >
             <Image
               source={{ uri: userData.bannerImage || 'https://via.placeholder.com/300x100' }}
@@ -122,10 +123,12 @@ const Profile = () => {
           </TouchableOpacity>
 
           {/* Imagem de perfil editável */}
-          <TouchableOpacity onPress={() => isEditing && pickImage('profileImage')}>
+          <TouchableOpacity onPress={() => isEditing && pickImage('profileImage')}
+          activeOpacity={!isEditing && 1}
+          >
             <Image
               source={{ uri: userData.profileImage }}
-              className="w-32 h-32 rounded-full mb-4 shadow-lg -mt-24"
+              className={`w-32 h-32 rounded-full mb-4 shadow-lg -mt-24`}
             />
           </TouchableOpacity>
 
@@ -138,12 +141,17 @@ const Profile = () => {
             </Text>
           </TouchableOpacity>
 
-          <Text className="text-2xl font-bold mb-6">{userData.name}</Text>
+          {
+            isEditing ? (
+              View
+            ) : (
+            <Text className="text-2xl font-bold mb-6">{userData.name}</Text>
+            )}
 
           {/* Dados do usuário */}
           <View className="w-full max-w-md bg-white rounded-lg p-6 shadow-md space-y-4">
             <Text className="text-lg font-semibold text-gray-700">Dados Pessoais</Text>
-            <View>
+            {/* <View>
               <Text className="text-gray-700">Email:</Text>
               <TextInput
                 className="h-10 border border-gray-300 rounded px-2"
@@ -151,8 +159,8 @@ const Profile = () => {
                 editable={isEditing}
                 onChangeText={(text) => setUserData({ ...userData, email: text })}
               />
-            </View>
-            <View>
+            </View> */}
+            {/* <View>
               <Text className="text-gray-700">Telefone:</Text>
               <TextInput
                 className="h-10 border border-gray-300 rounded px-2"
@@ -160,7 +168,7 @@ const Profile = () => {
                 editable={isEditing}
                 onChangeText={(text) => setUserData({ ...userData, phone: text })}
               />
-            </View>
+            </View> */}
             {/* Mais campos de dados */}
                       {/* Botão de logout */}
           <TouchableOpacity
@@ -172,7 +180,6 @@ const Profile = () => {
           </View>
         </View>
       </ScrollView>
-      <BottomBar />
     </View>
   );
 };

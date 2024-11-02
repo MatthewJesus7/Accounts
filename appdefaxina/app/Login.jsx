@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import Input from '../components/input/Input';
 import { useNavigation } from '@react-navigation/native';
-import { loginWithEmail, sendEmailVerification, checkEmailVerification } from '../config/firebaseConfig'; // Importar funções necessárias
+import { loginWithEmail, sendEmailVerification, checkEmailVerification } from '../config/authService'; // Importar funções necessárias
 import { Ionicons } from '@expo/vector-icons';
 
 const Login = () => {

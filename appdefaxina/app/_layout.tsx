@@ -1,25 +1,20 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./Loading";
-import { View } from "react-native";
+import BottomBar from "../components/layout/bottombar/BottomBar";
+import { View, StyleSheet } from "react-native";
 
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const pathname = usePathname(); // Obter o caminho completo da tela atual
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      setIsLoading(true); // Inicia o loading
-
-      // Simula uma verificação de autenticação com um delay
+      setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Lógica para verificar a autenticação
-      // const token = localStorage.getItem("userToken"); // Exemplo com Local Storage
-      
-      setIsAuthenticated(false); // Define se o usuário está autenticado com base no token
-
-      setIsLoading(false); // Finaliza o loading
+      setIsAuthenticated(false); // Exemplo de lógica de autenticação
+      setIsLoading(false);
     };
 
     checkAuthentication();
@@ -29,93 +24,32 @@ export default function RootLayout() {
     return <LoadingScreen />;
   }
 
+  // Lista de telas onde o BottomBar deve aparecer
+  const screensWithBottomBar = ["/", "/Profile", "/Home"];
+  const shouldShowBottomBar = screensWithBottomBar.includes(pathname);
+
+  // console.log("Current Pathname:", pathname);
+
   return (
+    <View style={styles.container}>
       <Stack>
-        <Stack.Screen
-          name={isAuthenticated ? "index" : "Login"}
-          options={{
-            headerStyle: {
-              backgroundColor: "#F3F4F6",
-            },
-            headerTintColor: "black",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerTitle: isAuthenticated ? "Home" : "Entrar",
-            headerBackTitle: "Voltar",
-          }}
+        <Stack.Screen 
+          name={isAuthenticated ? "index" : "Login"} 
         />
-        <Stack.Screen
-          name="Register"
-          options={{
-            headerStyle: {
-              backgroundColor: "#F3F4F6",
-            },
-            headerTintColor: "black",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerTitle: "Registrar-se",
-            headerBackTitle: "Voltar",
-          }}
-        />
-        <Stack.Screen
-          name="PrivacyPolicy"
-          options={{
-            headerStyle: {
-              backgroundColor: "#F3F4F6",
-            },
-            headerTintColor: "black",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerTitle: "Registrar-se",
-            headerBackTitle: "Voltar",
-          }}
-        />
-        <Stack.Screen
-          name="TermsOfUse"
-          options={{
-            headerStyle: {
-              backgroundColor: "#F3F4F6",
-            },
-            headerTintColor: "black",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerTitle: "Registrar-se",
-            headerBackTitle: "Voltar",
-          }}
-        />
-      
-        <Stack.Screen
-          name="ForgotPassword"
-          options={{
-            headerStyle: {
-              backgroundColor: "#F3F4F6",
-            },
-            headerTintColor: "black",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerTitle: "Registrar-se",
-            headerBackTitle: "Voltar",
-          }}
-        />
-        <Stack.Screen
-          name="Profile"
-          options={{
-            headerStyle: {
-              backgroundColor: "#F3F4F6",
-            },
-            headerTintColor: "black",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerTitle: "Registrar-se",
-            headerBackTitle: "Voltar",
-          }}
-        />
+        <Stack.Screen name="Register" />
+        <Stack.Screen name="PrivacyPolicy" />
+        <Stack.Screen name="TermsOfUse" />
+        <Stack.Screen name="ForgotPassword" />
+        <Stack.Screen name="Profile" />
       </Stack>
+      
+      {shouldShowBottomBar && <BottomBar />}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
