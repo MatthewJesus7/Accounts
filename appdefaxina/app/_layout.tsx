@@ -3,18 +3,25 @@ import { useEffect, useState } from "react";
 import LoadingScreen from "./Loading";
 import BottomBar from "../components/layout/bottombar/BottomBar";
 import { View, StyleSheet } from "react-native";
+import { onAuthStateChangedListener } from '../config/authService';
+import { User } from "firebase/auth";
+
 
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const pathname = usePathname(); // Obter o caminho completo da tela atual
+  const pathname = usePathname();
 
   useEffect(() => {
     const checkAuthentication = async () => {
       setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setIsAuthenticated(false); // Exemplo de lógica de autenticação
-      setIsLoading(false);
+
+      const unsubscribe = onAuthStateChangedListener((user: User | null) => {
+        setIsLoading(false);
+        setIsAuthenticated(!!user);
+      });
+
+      return () => unsubscribe();
     };
 
     checkAuthentication();
@@ -34,13 +41,27 @@ export default function RootLayout() {
     <View style={styles.container}>
       <Stack>
         <Stack.Screen 
-          name={isAuthenticated ? "index" : "Login"} 
+          name={isAuthenticated ? "index" : "Login"}
+          options={
+            isAuthenticated
+              ? { headerLeft: () => null }
+              : { header: () => null }
+          }
         />
-        <Stack.Screen name="Register" />
-        <Stack.Screen name="PrivacyPolicy" />
-        <Stack.Screen name="TermsOfUse" />
-        <Stack.Screen name="ForgotPassword" />
-        <Stack.Screen name="Profile" />
+        <Stack.Screen name="Register" 
+        options={{headerLeft: () => null,}} />
+
+        <Stack.Screen name="PrivacyPolicy" 
+        options={{header: () => null,}} />
+
+        <Stack.Screen name="TermsOfUse"
+        options={{header: () => null,}} />
+
+        <Stack.Screen name="ForgotPassword"
+        options={{header: () => null,}} />
+
+        <Stack.Screen name="Profile"
+          options={{headerLeft: () => null,}} />
       </Stack>
       
       {shouldShowBottomBar && <BottomBar />}

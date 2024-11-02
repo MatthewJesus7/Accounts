@@ -5,7 +5,7 @@ import CustomButton from './CustomButton';
 import { styled } from 'nativewind';
 import { Ionicons } from '@expo/vector-icons';
 
-const BottomBarContainer = styled(View, 'absolute bottom-0 w-full flex-row justify-around bg-white p-3 border-t border-gray-200 bg-gray-600');
+const BottomBarContainer = styled(View, 'relative w-full flex-row justify-around bg-white p-3 border-t border-gray-200 bg-gray-600');
 
 const BottomBar = () => {
   const navigation = useNavigation();

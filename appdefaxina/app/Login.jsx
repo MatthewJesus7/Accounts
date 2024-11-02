@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Input from '../components/input/Input';
+import CustomAlert from '../components/layout/popup/CustomAlert'; // Importando o CustomAlert
 import { useNavigation } from '@react-navigation/native';
 import { loginWithEmail, sendEmailVerification, checkEmailVerification } from '../config/authService'; // Importar funções necessárias
 import { Ionicons } from '@expo/vector-icons';
@@ -11,10 +12,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const handleFirebaseErrorLogin = (error) => {
     let errorMessage = '';
-  
+
     switch (error.code) {
       case 'auth/user-not-found':
         errorMessage = 'Usuário não encontrado. Verifique o e-mail ou senha.';
@@ -34,9 +37,9 @@ const Login = () => {
       default:
         errorMessage = 'Erro ao realizar login. Por favor, verifique seu e-mail e senha e tente novamente.';
     }
-  
+
     setErrorMessage(errorMessage); // Define a mensagem de erro
-  };  
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -48,21 +51,19 @@ const Login = () => {
       await loginWithEmail(email, password, handleFirebaseErrorLogin);
 
       const userCredential = await loginWithEmail(email, password, handleFirebaseErrorLogin);
-
       const user = userCredential.user;
 
       const isVerified = await checkEmailVerification(user); // Verifica se o email está verificado
 
       if (!isVerified) {
         await sendEmailVerification(user);
-        Alert.alert("Email não verificado", "Um código de verificação foi enviado para seu email.");
-        // navigation.navigate('EmailVerification', { email });
-
+        setAlertMessage("Email não verificado. Um código de verificação foi enviado para seu email.");
+        setAlertVisible(true);
       } else {
-        navigation.navigate('index'); 
+        navigation.navigate('index');
       }
     } catch (error) {
-      handleFirebaseErrorLogin(error)
+      handleFirebaseErrorLogin(error);
     }
   };
 
@@ -84,7 +85,6 @@ const Login = () => {
 
       <View className="relative">
         <Input
-        // classname="mr-[50px] rounded-br-none rounded-tr-none"
           label="Senha"
           placeholder="Digite sua senha"
           secureTextEntry={!isPasswordVisible}
@@ -95,11 +95,11 @@ const Login = () => {
           onPress={() => setIsPasswordVisible(!isPasswordVisible)}
           className="absolute right-3 top-[43%]"
         >
-            <Ionicons
-              name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
-              size={24}
-              color="gray"
-            />
+          <Ionicons
+            name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+            size={24}
+            color="gray"
+          />
         </TouchableOpacity>
       </View>
 
@@ -115,7 +115,6 @@ const Login = () => {
       </TouchableOpacity>
 
       <View className="flex flex-col items-center mt-4">
-
         <TouchableOpacity onPress={handleForgotPassword}>
           <Text className="text-blue-500 underline pb-4">Esqueci minha senha</Text>
         </TouchableOpacity>
@@ -127,6 +126,13 @@ const Login = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* CustomAlert para exibir mensagens personalizadas */}
+      <CustomAlert
+        visible={alertVisible}
+        message={alertMessage}
+        onClose={() => setAlertVisible(false)}
+      />
     </View>
   );
 };

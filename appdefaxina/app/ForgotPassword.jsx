@@ -1,24 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
-import Input from '../components/input/Input'; // Importando o componente de entrada
+import { View, Text, TouchableOpacity } from 'react-native';
+import Input from '../components/input/Input';
+import CustomAlert from '../components/layout/popup/CustomAlert';
+
 import { useNavigation } from '@react-navigation/native';
-import { sendPasswordResetEmail } from 'firebase/auth'; // Importando a função do Firebase
-import { auth } from '../config/firebaseConfig'; // Importando a configuração do Firebase
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../config/firebaseConfig';
 
 const ForgotPassword = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
 
   const handleResetPassword = async () => {
     if (!email) {
-      setErrorMessage('Por favor, insira um e-mail válido.');
+      setAlertTitle('Erro');
+      setAlertMessage('Por favor, insira um e-mail válido.');
+      setAlertVisible(true);
       return;
     }
-    
+
     try {
       await sendPasswordResetEmail(auth, email);
-      Alert.alert('Instruções enviadas', `Um e-mail foi enviado para ${email} com instruções para redefinir sua senha.`);
+      setAlertTitle('Instruções enviadas');
+      setAlertMessage(`Um e-mail foi enviado para ${email} com instruções para redefinir sua senha.`);
+      setAlertVisible(true);
       setEmail(''); // Limpa o campo de entrada após o envio
       navigation.navigate('Login'); // Navega para a tela de login após o envio
     } catch (error) {
@@ -33,7 +41,9 @@ const ForgotPassword = () => {
         default:
           errorMessage = error.message || 'Ocorreu um erro inesperado. Tente novamente.';
       }
-      setErrorMessage(errorMessage);
+      setAlertTitle('Erro');
+      setAlertMessage(errorMessage);
+      setAlertVisible(true);
     }
   };
 
@@ -50,10 +60,6 @@ const ForgotPassword = () => {
         onChangeText={setEmail}
       />
 
-      {errorMessage ? (
-        <Text className="text-red-500 text-sm mt-2">{errorMessage}</Text>
-      ) : null}
-
       <TouchableOpacity
         className={`p-4 rounded-lg mt-6 bg-blue-500`}
         onPress={handleResetPassword}
@@ -67,6 +73,13 @@ const ForgotPassword = () => {
           <Text className="text-blue-500 underline">Faça login</Text>
         </TouchableOpacity>
       </View>
+
+      <CustomAlert
+        visible={alertVisible}
+        onClose={() => setAlertVisible(false)}
+        title={alertTitle}
+        message={alertMessage}
+      />
     </View>
   );
 };

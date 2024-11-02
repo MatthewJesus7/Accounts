@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Input from '../components/input/Input';
 import { useNavigation } from '@react-navigation/native';
 import { signUp } from '../config/authService';
 import { validateEmail, checkPasswordStrength } from '../utils/validationUtils';
 import { Ionicons } from '@expo/vector-icons';
+import CustomAlert from '../components/layout/popup/CustomAlert'; // Importar o CustomAlert
 
 const Register = () => {
   const navigation = useNavigation();
@@ -17,6 +18,8 @@ const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isAlertVisible, setIsAlertVisible] = useState(false); // Para o CustomAlert
+  const [alertMessage, setAlertMessage] = useState(''); // Mensagem do CustomAlert
 
   const handleFirebaseErrorRegister = (error) => {
     let errorMessage = '';
@@ -81,7 +84,8 @@ const Register = () => {
     try {    
       // Enviar email para o Firebase após a verificação
       await signUp(email, password, handleFirebaseErrorRegister);
-      Alert.alert("Registro concluído", "Verifique seu email para ativar sua conta.");
+      setAlertMessage("Registro concluído. Verifique seu email para ativar sua conta.");
+      setIsAlertVisible(true); // Mostrar o CustomAlert
       navigation.navigate('Login');
     } catch (error) {
       handleFirebaseErrorRegister(error);
@@ -162,7 +166,7 @@ const Register = () => {
         <Text className="text-red-500 text-sm mt-2">{errorMessage}</Text>
       ) : null}
 
-      <View className="flex-row items-center mt-4">
+      <View className="flex-row justify-center mt-4">
         <TouchableOpacity onPress={() => setTermsAccepted(!termsAccepted)}>
           <Ionicons
             name={termsAccepted ? "checkbox" : "checkbox-outline"}
@@ -173,20 +177,12 @@ const Register = () => {
 
         <Text className="ml-2">
           Aceito os 
-          <TouchableOpacity onPress={() => navigation.navigate('TermsOfUse')}
-          className="px-1.5"
-          >
-            <Text className="text-blue-500 underline">
-              termos de uso
-            </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('TermsOfUse')} className="px-1.5">
+            <Text className="text-blue-500 underline">termos de uso</Text>
           </TouchableOpacity>
            e a 
-          <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicy')}
-          className="px-1.5"
-          >
-            <Text className="text-blue-500 underline">
-              política de privacidade
-            </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicy')} className="px-1.5">
+            <Text className="text-blue-500 underline">política de privacidade</Text>
           </TouchableOpacity>
         </Text>
       </View>
@@ -198,12 +194,19 @@ const Register = () => {
         <Text className="text-white text-center font-semibold">Cadastrar</Text>
       </TouchableOpacity>
 
-      <View className="flex items-center flex-row mt-4">
+      <View className="flex justify-center flex-row mt-4">
         <Text className="pr-2">Já tem uma conta?</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text className="text-blue-500 underline">Faça login</Text>
         </TouchableOpacity>
       </View>
+
+      {isAlertVisible && (
+        <CustomAlert 
+          message={alertMessage} 
+          onClose={() => setIsAlertVisible(false)} // Função para fechar o alert
+        />
+      )}
     </View>
   );
 };

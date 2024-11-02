@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { saveUserData, getUserData, signOutUser } from '../config/authService';
-import BottomBar from '../components/layout/bottombar/BottomBar';
+import CustomAlert from '../components/layout/popup/CustomAlert';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -11,14 +12,14 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState({
     name: '',
-    email: '',
-    phone: '',
     birthdate: '',
-    subscriptionStatus: '',
     createdAt: '',
-    profileImage: '', 
+    profileImage: '',
     bannerImage: '',
   });
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   // Carrega os dados do usuário
   useEffect(() => {
@@ -28,23 +29,19 @@ const Profile = () => {
         if (data) {
           setUserData({
             name: data.name || 'Nome do Usuário',
-            email: data.email || 'usuario@example.com',
-            phone: data.phone || '(11) 98765-4321',
             birthdate: data.birthdate || '01/01/2000',
-            companyName: data.companyName || 'Nome da Empresa',
-            role: data.role || 'Cargo',
-            website: data.website || 'https://example.com',
-            leadCount: data.leadCount || 0,
-            subscriptionStatus: data.subscriptionStatus || 'Gratuito',
-            createdAt: data.createdAt || '01/01/2023',
+            createdAt: data.createdAt,
             profileImage: data.profileImage || 'https://via.placeholder.com/150',
-            bannerImage: data.bannerImage || '', // Adicione a URL do banner
+            bannerImage: data.bannerImage || 'https://via.placeholder.com/300x100',
           });
         } else {
-          Alert.alert('Nenhum dado encontrado.');
+          setAlertMessage('Nenhum dado encontrado.');
+          setAlertVisible(true);
         }
       } catch (error) {
-        Alert.alert('Erro ao buscar dados: ' + error.message);
+        setAlertMessage('Erro ao buscar dados: ' + error.message);
+        setAlertVisible(true);
+        navigation.navigate('Login');
       } finally {
         setLoading(false);
       }
@@ -56,9 +53,11 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       await saveUserData(userData);
-      Alert.alert('Dados salvos com sucesso!');
+      setAlertMessage('Dados salvos com sucesso!');
+      setAlertVisible(true);
     } catch (error) {
-      Alert.alert('Erro ao salvar os dados: ' + error.message);
+      setAlertMessage('Erro ao salvar os dados: ' + error.message);
+      setAlertVisible(true);
     }
     setIsEditing(false);
   };
@@ -71,6 +70,17 @@ const Profile = () => {
     }
   };
 
+  const uploadImageToFirebase = async (uri) => {
+    const storage = getStorage();
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const imageRef = ref(storage, 'images/' + new Date().toISOString() + '.png');
+  
+    await uploadBytes(imageRef, blob);
+    const downloadURL = await getDownloadURL(imageRef);
+    return downloadURL;
+  };
+
   const pickImage = async (imageType) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -80,21 +90,34 @@ const Profile = () => {
     });
 
     if (!result.canceled) {
-      setUserData((prevData) => ({
-        ...prevData,
-        [imageType]: result.uri,
-      }));
-    }
+      const imageUri = result.assets[0].uri;
+      try {
+        const downloadURL = await uploadImageToFirebase(imageUri);
+        setUserData((prevData) => ({
+          ...prevData,
+          [imageType]: downloadURL,
+        }));
+      } catch (error) {
+        setAlertMessage('Erro ao fazer upload da imagem: ' + error.message);
+        setAlertVisible(true);
+      }
   };
+};
 
   const handleLogout = async () => {
     try {
-      await signOutUser(); // Chama a função de signOut para sair
-      Alert.alert('Logout realizado com sucesso!');
-      navigation.navigate('Login')
+      await signOutUser();
+      setAlertMessage('Logout realizado com sucesso!');
+      setAlertVisible(true);
+      navigation.navigate('Login');
     } catch (error) {
-      Alert.alert('Erro ao realizar logout: ' + error.message);
+      setAlertMessage('Erro ao realizar logout: ' + error.message);
+      setAlertVisible(true);
     }
+  };
+
+  const closeAlert = () => {
+    setAlertVisible(false);
   };
 
   if (loading) {
@@ -109,6 +132,7 @@ const Profile = () => {
   return (
     <View className="flex-1 bg-gray-100">
       <ScrollView className="flex-grow">
+
         <View className="flex-1 items-center p-6">
           {/* Banner editável */}
           <TouchableOpacity
@@ -123,11 +147,12 @@ const Profile = () => {
           </TouchableOpacity>
 
           {/* Imagem de perfil editável */}
-          <TouchableOpacity onPress={() => isEditing && pickImage('profileImage')}
+          <TouchableOpacity 
+          onPress={() => isEditing && pickImage('profileImage')}
           activeOpacity={!isEditing && 1}
           >
             <Image
-              source={{ uri: userData.profileImage }}
+              source={{ uri: userData.profileImage || 'https://via.placeholder.com/150' }}
               className={`w-32 h-32 rounded-full mb-4 shadow-lg -mt-24`}
             />
           </TouchableOpacity>
@@ -143,7 +168,14 @@ const Profile = () => {
 
           {
             isEditing ? (
-              View
+              <View className="w-full max-w-md bg-white rounded-lg p-6 shadow-md space-y-4">
+              <TextInput
+                className="border-b border-gray-300 mb-4 p-2"
+                placeholder="Nome"
+                value={userData.name}
+                onChangeText={(text) => setUserData({ ...userData, name: text })}
+              />
+              </View>
             ) : (
             <Text className="text-2xl font-bold mb-6">{userData.name}</Text>
             )}
@@ -151,35 +183,21 @@ const Profile = () => {
           {/* Dados do usuário */}
           <View className="w-full max-w-md bg-white rounded-lg p-6 shadow-md space-y-4">
             <Text className="text-lg font-semibold text-gray-700">Dados Pessoais</Text>
-            {/* <View>
-              <Text className="text-gray-700">Email:</Text>
-              <TextInput
-                className="h-10 border border-gray-300 rounded px-2"
-                value={userData.email}
-                editable={isEditing}
-                onChangeText={(text) => setUserData({ ...userData, email: text })}
-              />
-            </View> */}
-            {/* <View>
-              <Text className="text-gray-700">Telefone:</Text>
-              <TextInput
-                className="h-10 border border-gray-300 rounded px-2"
-                value={userData.phone}
-                editable={isEditing}
-                onChangeText={(text) => setUserData({ ...userData, phone: text })}
-              />
-            </View> */}
-            {/* Mais campos de dados */}
-                      {/* Botão de logout */}
-          <TouchableOpacity
-            className="px-4 py-2 bg-red-500 rounded-full mb-4"
-            onPress={handleLogout}
-          >
-            <Text className="text-white font-semibold">Sair</Text>
-          </TouchableOpacity>
+            {/* Campos de dados omitidos para brevidade */}
+            <TouchableOpacity
+              className="px-4 py-2 bg-red-500 rounded-full mb-4"
+              onPress={handleLogout}
+            >
+              <Text className="text-white font-semibold">Sair</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+      <CustomAlert
+        visible={alertVisible}
+        message={alertMessage}
+        onClose={closeAlert}
+      />
     </View>
   );
 };

@@ -6,7 +6,7 @@ import {
   sendEmailVerification,
   signOut,
 } from "firebase/auth";
-import { ref, set, get } from "firebase/database";
+import { ref, set, get, remove } from "firebase/database";
 
 // Função para registrar um novo usuário
 export const signUp = async (email, password, handleError) => {
@@ -14,7 +14,7 @@ export const signUp = async (email, password, handleError) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-        await sendEmailVerification(user);
+    await sendEmailVerification(user);
 
     return userCredential;
   } catch (error) {
@@ -63,24 +63,21 @@ export const loginWithEmail = async (email, password, handleError) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Verificar se o e-mail foi confirmado
     if (!user.emailVerified) {
       throw new Error("Por favor, verifique seu e-mail antes de fazer login.");
     }
 
-    // Busca dados do usuário
     const userData = await getUserData();
 
-    // Verifica se o nome está ausente e o salva caso necessário
     if (!userData || !userData.name) {
-      const name = localStorage.getItem("tempUserName"); // Nome temporário salvo no registro
+      const name = localStorage.getItem("tempUserName");
       if (name) {
-        await saveUserData({ name }); // Salva o nome no banco de dados
+        await saveUserData({ name });
         localStorage.removeItem("tempUserName");
       }
     }
 
-    return userCredential; // Retorna o usuário logado com e-mail verificado
+    return userCredential;
   } catch (error) {
     if (handleError) handleError(error);
   }
@@ -144,6 +141,11 @@ export const getUserData = async () => {
   } else {
     throw new Error("Usuário não autenticado.");
   }
+};
+
+// Função para observar o estado de autenticação do usuário (novo)
+export const onAuthStateChangedListener = (callback) => {
+  return onAuthStateChanged(auth, callback);
 };
 
 export { sendEmailVerification };
