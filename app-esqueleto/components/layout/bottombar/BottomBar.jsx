@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton from './CustomButton';
-import { styled } from 'nativewind';
 import { Ionicons } from '@expo/vector-icons';
-
-const BottomBarContainer = styled(View, 'relative w-full flex-row justify-around bg-white p-3 border-t border-gray-200 bg-gray-600');
 
 const BottomBar = () => {
   const navigation = useNavigation();
@@ -17,7 +14,7 @@ const BottomBar = () => {
   };
 
   return (
-    <BottomBarContainer>
+    <View className="relative w-full flex-row justify-around p-3 border-t border-gray-200 bg-gray-600">
       <CustomButton
         label={<Ionicons name="home-outline" size={24} color="white" />} // Ícone de Home
         isSelected={selectedTab === 'index'}
@@ -38,7 +35,7 @@ const BottomBar = () => {
         isSelected={selectedTab === 'Profile'}
         onPress={() => handlePress('Profile')}
       />
-    </BottomBarContainer>
+    </View>
   );
 };
 

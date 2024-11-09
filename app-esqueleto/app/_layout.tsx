@@ -8,7 +8,6 @@ import { User } from "firebase/auth";
 
 import "../global.css";
 
-
 export default function RootLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,34 +36,28 @@ export default function RootLayout() {
   const screensWithBottomBar = ["/", "/Profile", "/Home"];
   const shouldShowBottomBar = screensWithBottomBar.includes(pathname);
 
-  // console.log("Current Pathname:", pathname);
-
   return (
     <View style={styles.container}>
-        <Stack>
-          <Stack.Screen
-            name={isAuthenticated ? "index" : "Login"}
-            options={
-              isAuthenticated
-                ? { headerLeft: () => null }
-                : { header: () => null }
-            }
-          />
-          <Stack.Screen name="Register"
-          options={{headerLeft: () => null,}} />
-          <Stack.Screen name="PrivacyPolicy"
-          options={{header: () => null,}} />
-          <Stack.Screen name="TermsOfUse"
-          options={{header: () => null,}} />
-          <Stack.Screen name="ForgotPassword"
-          options={{header: () => null,}} />
-          <Stack.Screen name="Profile"
-            options={{headerLeft: () => null,}} />
-        </Stack>
+      <Stack>
+        <Stack.Screen
+          name={isAuthenticated ? "index" : "Login"}
+          options={
+            isAuthenticated
+              ? { headerLeft: () => null }
+              : { header: () => null }
+          }
+        />
+        <Stack.Screen name="Register" options={{ headerLeft: () => null }} />
+        <Stack.Screen name="PrivacyPolicy" options={{ header: () => null }} />
+        <Stack.Screen name="TermsOfUse" options={{ header: () => null }} />
+        <Stack.Screen name="ForgotPassword" options={{ header: () => null }} />
+        <Stack.Screen name="Profile" options={{ headerLeft: () => null }} />
 
+        {/* O Slot vai ser renderizado aqui, se algum componente filho for passado para essa tela */}
         <Slot />
+      </Stack>
 
-        {shouldShowBottomBar && <BottomBar />}
+      {shouldShowBottomBar && <BottomBar />}
     </View>
   );
 }
