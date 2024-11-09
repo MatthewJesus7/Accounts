@@ -1,10 +1,12 @@
-import { Stack, usePathname } from "expo-router";
+import { Stack, usePathname, Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import LoadingScreen from "./Loading";
 import BottomBar from "../components/layout/bottombar/BottomBar";
 import { View, StyleSheet } from "react-native";
 import { onAuthStateChangedListener } from '../config/authService';
 import { User } from "firebase/auth";
+
+import "../global.css";
 
 
 export default function RootLayout() {
@@ -39,32 +41,30 @@ export default function RootLayout() {
 
   return (
     <View style={styles.container}>
-      <Stack>
-        <Stack.Screen 
-          name={isAuthenticated ? "index" : "Login"}
-          options={
-            isAuthenticated
-              ? { headerLeft: () => null }
-              : { header: () => null }
-          }
-        />
-        <Stack.Screen name="Register" 
-        options={{headerLeft: () => null,}} />
-
-        <Stack.Screen name="PrivacyPolicy" 
-        options={{header: () => null,}} />
-
-        <Stack.Screen name="TermsOfUse"
-        options={{header: () => null,}} />
-
-        <Stack.Screen name="ForgotPassword"
-        options={{header: () => null,}} />
-
-        <Stack.Screen name="Profile"
+        <Stack>
+          <Stack.Screen
+            name={isAuthenticated ? "index" : "Login"}
+            options={
+              isAuthenticated
+                ? { headerLeft: () => null }
+                : { header: () => null }
+            }
+          />
+          <Stack.Screen name="Register"
           options={{headerLeft: () => null,}} />
-      </Stack>
-      
-      {shouldShowBottomBar && <BottomBar />}
+          <Stack.Screen name="PrivacyPolicy"
+          options={{header: () => null,}} />
+          <Stack.Screen name="TermsOfUse"
+          options={{header: () => null,}} />
+          <Stack.Screen name="ForgotPassword"
+          options={{header: () => null,}} />
+          <Stack.Screen name="Profile"
+            options={{headerLeft: () => null,}} />
+        </Stack>
+
+        <Slot />
+
+        {shouldShowBottomBar && <BottomBar />}
     </View>
   );
 }
