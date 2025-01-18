@@ -1,12 +1,12 @@
-import { Text } from 'react-native';
 import { Redirect, Stack } from 'expo-router';
 import { useSession } from '../../ctx';
+import Loading from '../../components/layout/animations/Loading'
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <Loading/>;
   }
 
   if (!session) {
