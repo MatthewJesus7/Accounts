@@ -5,7 +5,7 @@ export default function Index() {
   const { signOut } = useSession();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View className="flex items-center justify-center h-screen">
       <Text>App interno (apenas autenticado)</Text>
       <Text onPress={signOut}>Sign Out</Text>
     </View>

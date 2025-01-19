@@ -6,7 +6,7 @@ export default function SignIn() {
   const { signIn } = useSession();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View className="flex items-center justify-center h-screen">
       <Text>App externo (todos tem acesso)</Text>
       <Text
         onPress={() => {
