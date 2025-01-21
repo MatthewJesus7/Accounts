@@ -2,6 +2,8 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { useSession } from '../ctx';
 
+import BottomBar from '@/components/layout/bar/bottomBar/BottomBar';
+
 export default function SignIn() {
   const { signIn } = useSession();
 
@@ -16,6 +18,7 @@ export default function SignIn() {
       >
         Sign In
       </Text>
+
     </View>
   );
 }
