@@ -1,44 +1,47 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
+
 import BottomBarButton from './BottomBarButton';
-import { Ionicons } from '@expo/vector-icons';
+import Section from '../../Section';
+
+import { HomeIcon, PlusIcon, ChartBarIcon } from 'react-native-heroicons/outline';
+
+const ICON_COLOR_SELECTED = "#030712";
+const ICON_COLOR_DEFAULT = "#6b7280";
 
 const BottomBar = () => {
-  const [selectedTab, setSelectedTab] = useState('/index');
+  const [selectedTab, setSelectedTab] = useState('home');
   const router = useRouter();
 
   const handlePress = (screen) => {
     setSelectedTab(screen);
-    router.replace(screen); // Navega para a tela selecionada
+    router.replace(screen);
   };
 
+  const getIconColor = (screen) => (
+    selectedTab === screen ? ICON_COLOR_SELECTED : ICON_COLOR_DEFAULT
+  );
+
   return (
-    <View className="flex-row flex-shrink-0 justify-around w-full h-10 p-3 border-t border-gray-200 bg-gray-600">
-
-{/* w-10 h-10 bg-red-500 */}
-
-      <BottomBarButton
-        label={<Ionicons name="home-outline" size={24} color={selectedTab === '/' ? 'white' : 'black'} />}
-        isSelected={selectedTab === '/'}
-        onPress={() => handlePress('/')}
-      />
-      <BottomBarButton
-        label={<Ionicons name="search-outline" size={24} color={selectedTab === 'Search' ? 'white' : 'black'} />}
-        isSelected={selectedTab === 'Search'}
-        onPress={() => handlePress('Search')}
-      />
-      <BottomBarButton
-        label={<Ionicons name="notifications-outline" size={24} color={selectedTab === 'Notifications' ? 'white' : 'black'} />}
-        isSelected={selectedTab === 'Notifications'}
-        onPress={() => handlePress('Notifications')}
-      />
-      <BottomBarButton
-        label={<Ionicons name="person-outline" size={24} color={selectedTab === 'Profile' ? 'white' : 'black'} />}
-        isSelected={selectedTab === 'Profile'}
-        onPress={() => handlePress('Profile')}
-      />
-    </View>
+      <View className="flex-row justify-around items-center w-full h-16 border-t border-gray-200 bg-gray-50">
+        <BottomBarButton
+          label={<HomeIcon width={24} height={24} color={getIconColor('home')} />}
+          isSelected={selectedTab === 'home'}
+          onPress={() => handlePress('home')}
+        />
+        <BottomBarButton
+          label={<PlusIcon width={24} height={24} color={getIconColor('plus')} />}
+          isSelected={selectedTab === 'plus'}
+          onPress={() => handlePress('plus')}
+          customclass="bg-gray-900 -mt-8"
+        />
+        <BottomBarButton
+          label={<ChartBarIcon width={24} height={24} color={getIconColor('stats')} />}
+          isSelected={selectedTab === 'stats'}
+          onPress={() => handlePress('stats')}
+        />
+      </View>
   );
 };
 
