@@ -1,14 +1,16 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import Section from '../../layout/Section';
 
-const Balance = () => {
+const Balance = ({balance}) => {
   return (
     <View>
       <Section customclass="flex flex-row gap-2vw">
         
         <View>
           <Text className="text-gray-400 font-semibold">Saldo Atual</Text>
-          <Text className="text-green-500 text-2xl font-bold">$1,250.00</Text>
+          <Text className={` text-2xl font-bold
+          ${balance < 0 ? 'text-red-500' : 'text-green-500' }
+          `}>{balance}</Text>
           <Text className="text-gray-400 text-sm">
             Próximo dia previsto para receber: Dia 30
         </Text>
