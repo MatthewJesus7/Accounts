@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import Section from '../../layout/Section';
 
-const Balance = ({balance}) => {
+const Balance = ({ balance, salaryDay }) => {
   return (
     <View>
       <Section customclass="flex flex-row gap-2vw">
@@ -12,7 +12,7 @@ const Balance = ({balance}) => {
           ${balance < 0 ? 'text-red-500' : 'text-green-500' }
           `}>{balance}</Text>
           <Text className="text-gray-400 text-sm">
-            Próximo dia previsto para receber: Dia 30
+            Próximo dia previsto para receber: {salaryDay}
         </Text>
         </View>
 

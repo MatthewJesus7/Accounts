@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import * as React from 'react';
+import { useState } from 'react';
+import { SafeAreaView, ScrollView, View, TextInput } from 'react-native';
 import Balance from '../components/pages/Main/Balance';
 import Card from '../components/pages/Main/Card';
 import BottomBar from '../components/layout/bar/bottomBar/BottomBar';
+import InitialSetupPopup from '../components/layout/forms/InitialSetupPopup';
 
 export default function App() {
-  const [initialBalance, setInitialBalance] = useState<string>("10000");
+  // Saldo inicial, que será definido no setup
+  const [initialBalance, setInitialBalance] = useState<string>("0");
+  // Dia em que o usuário recebe o salário (definido no setup)
+  const [salaryDay, setSalaryDay] = useState<string>("1");
   const [newCardTitle, setNewCardTitle] = useState<string>("");
   const [newCardCost, setNewCardCost] = useState<string>("");
   const [cards, setCards] = useState<{ title: string; cost: string }[]>([]);
+  // Exibe o popup de setup na primeira vez
+  const [isSetupVisible, setIsSetupVisible] = useState<boolean>(true);
 
   const parseNumberFromPT = (str: string): number =>
     parseFloat(str.replace(/\./g, '').replace(',', '.')) || 0;
@@ -26,48 +33,44 @@ export default function App() {
     }
   };
 
-  return (
-    <View className="flex-1 justify-between h-[100vh] bg-gray-50">
-      <View className="p-4">
-        <TextInput
-          className="border border-gray-400 p-2 mb-4"
-          value={initialBalance}
-          onChangeText={setInitialBalance}
-          placeholder="Digite o saldo inicial (ex: 10.000,00)"
-          keyboardType="numeric"
-        />
+  // Quando o setup for concluído, atualiza o saldo e o dia
+  const handleSetupSave = (balance: string, payday: string) => {
+    setInitialBalance(balance);
+    setSalaryDay(payday);
+    setIsSetupVisible(false);
+  };
 
-        <Balance balance={formatarComVirgula(computedBalance)} />
-        
-        <View className="mt-4">
-          <TextInput
-            className="border border-gray-400 p-2 mb-2"
-            value={newCardTitle}
-            onChangeText={setNewCardTitle}
-            placeholder="Título do card"
-          />
-          <TextInput
-            className="border border-gray-400 p-2 mb-2"
-            value={newCardCost}
-            onChangeText={setNewCardCost}
-            placeholder="Custo do card (ex: 1,234 ou 1,23)"
-            keyboardType="numeric"
-          />
-          <TouchableOpacity className="bg-blue-500 p-2 rounded" onPress={addCard}>
-            <Text className="text-white text-center">Adicionar Card</Text>
-          </TouchableOpacity>
+  return (
+    <SafeAreaView className="flex-1 justify-between bg-gray-50">
+      <InitialSetupPopup 
+         visible={isSetupVisible} 
+         onClose={() => setIsSetupVisible(false)}
+         onSave={handleSetupSave}
+      />
+      <ScrollView>
+        <View className="p-4">
+
+          <Balance balance={formatarComVirgula(computedBalance)} salaryDay={salaryDay} />
+
+          <View className="mt-4">
+            {cards.map((card, index) => (
+              <Card
+                key={index}
+                title={card.title}
+                cost={formatarComVirgula(parseNumberFromPT(card.cost))}
+              />
+            ))}
+          </View>
         </View>
-        <View className="mt-4">
-          {cards.map((card, index) => (
-            <Card
-              key={index}
-              title={card.title}
-              cost={formatarComVirgula(parseNumberFromPT(card.cost))}
-            />
-          ))}
-        </View>
-      </View>
-      <BottomBar />
-    </View>
+      </ScrollView>
+
+      <BottomBar
+        newCardTitle={newCardTitle}
+        setNewCardTitle={setNewCardTitle}
+        newCardCost={newCardCost}
+        setNewCardCost={setNewCardCost}
+        addCard={addCard}
+      />
+    </SafeAreaView>
   );
 }
