@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import Section from '../../layout/Section';
+import Section from '../../../layout/Section';
 
 const Card = ({ title, cost }) => {
   return (

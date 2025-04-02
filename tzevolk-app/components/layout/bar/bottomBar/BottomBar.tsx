@@ -29,7 +29,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
   const router = useRouter();
   const [isEmptyPopupVisible, setIsEmptyPopupVisible] = useState<boolean>(false);
 
-  const handlePress = (screen: string): void => {
+  const handlePress = (screen: any): void => {
     setSelectedTab(screen);
     router.replace(screen);
   };
@@ -43,19 +43,6 @@ const BottomBar: React.FC<BottomBarProps> = ({
 
   return (
     <>
-      <EmptyPopup
-        visible={isEmptyPopupVisible}
-        onClose={() => setIsEmptyPopupVisible(false)}
-      >
-        <AddCard
-          newCardTitle={newCardTitle}
-          setNewCardTitle={setNewCardTitle}
-          newCardCost={newCardCost}
-          setNewCardCost={setNewCardCost}
-          addCard={addCard}
-        />
-      </EmptyPopup>
-
       <View className="flex-row justify-around items-center w-full h-16 border-t border-gray-200 bg-gray-50">
         <BottomBarButton
           label={<HomeIcon width={24} height={24} color={getIconColor('home')} />}
